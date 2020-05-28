@@ -1,11 +1,3 @@
-provider "kubernetes" {
-    load_config_file = false
-    host = var.gke_host
-    cluster_ca_certificate = base64decode(var.gke_cluster_cert)
-    username = var.master_username
-    password = var.master_password
-}
-
 resource "kubernetes_namespace" "jenkins" {
     metadata {
         name = "jenkins"
@@ -45,7 +37,7 @@ resource "kubernetes_deployment" "jenkins-deployment" {
             }
             spec {
                 container {
-                    image = "${data.google_container_registry_repository.registry.repository_url}/${var.jenkins_docker_image}:${var.jenkins_docker_image_version}"
+                    image = "${var.registry_url}/${var.jenkins_docker_image}:${var.jenkins_docker_image_version}"
                     name = "jenkins-master"
                     env {
                         name = "JENKINS_OPTS"

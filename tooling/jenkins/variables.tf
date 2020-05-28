@@ -1,4 +1,9 @@
-variable "master_username" {}
-variable "master_password" {}
-variable "gke_host" {}
-variable "gke_cluster_cert" {}
+variable "registry_url" {}
+variable "jenkins_docker_image" {
+    default = "jenkins-master"
+}
+
+variable "jenkins_docker_image_version" {
+    default = "latest"
+}
+variable "pd_name" {}
