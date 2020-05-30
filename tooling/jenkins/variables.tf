@@ -6,4 +6,6 @@ variable "jenkins_docker_image" {
 variable "jenkins_docker_image_version" {
     default = "latest"
 }
-variable "pd_name" {}
+variable "pd_name" {
+    default = "tooling-disk"
+}

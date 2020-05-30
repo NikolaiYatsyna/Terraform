@@ -27,11 +27,3 @@ variable "node_count" {
 variable "gcr_region" {
     default = "us"
 }
-
-variable "pd_name" {
-    default = "tooling-disk"
-}
-
-variable "static_ip_resource_name" {
-    default = "tooling-global-ip"
-}
