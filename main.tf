@@ -23,5 +23,12 @@ provider "kubernetes" {
 module "jenkins" {
     source = "./tooling/jenkins"
     registry_url = data.google_container_registry_repository.registry.repository_url
-    pd_name = var.pd_name
+}
+
+module "consul" {
+    source = "./tooling/consul"
+    cluster_host = module.tooling_cluster.gke_host
+    cluster_ca_certificate = base64decode(module.tooling_cluster.gke_cluster_cert)
+    cluster_username = module.tooling_cluster.master_username
+    cluster_password = module.tooling_cluster.master_password
 }
