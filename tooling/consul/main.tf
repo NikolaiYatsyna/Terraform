@@ -1,13 +1,6 @@
-provider "helm" {
-    kubernetes {
-        host = var.cluster_host
-        username = var.cluster_username
-        password = var.cluster_password
-        cluster_ca_certificate = var.cluster_ca_certificate
-    }
-}
 
-data "template_file" "consul" {
+
+data "template_file" "consul-template" {
     template = file("./tooling/consul/config.tpl")
     vars = {
         datacenter_name = var.datacenter_name
@@ -21,6 +14,6 @@ data "template_file" "consul" {
 resource "helm_release" "consul-server" {
     repository = "https://helm.releases.hashicorp.com"
     chart = "consul"
-    name = "tooling"
-    values = [ data.template_file.consul.rendered]
+    name = "tooling-consul"
+    values = [ data.template_file.consul-template.rendered]
 }

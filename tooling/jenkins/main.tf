@@ -1,3 +1,10 @@
+//resource "google_compute_disk" "toooling-disk" {
+//    lifecycle {
+//        prevent_destroy = true
+//    }
+//    name = var.pd_name
+//}
+
 resource "kubernetes_namespace" "jenkins" {
     metadata {
         name = "jenkins"
