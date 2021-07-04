@@ -1,34 +1,32 @@
-data "google_container_registry_repository" "registry" {
-    project = var.project
-    region = var.gcr_region
-}
-
-module "tooling_cluster" {
-    source = "./cluster"
-    credentials = var.credentials
-    project = var.project
-    cluster_name = var.cluster_name
-    master_username = var.master_username
-    master_password = var.master_password
+module "kubernetes_cluster" {
+  source        = "./cluster"
 }
 
 provider "kubernetes" {
-    load_config_file = false
-    host = module.tooling_cluster.gke_host
-    cluster_ca_certificate = base64decode(module.tooling_cluster.gke_cluster_cert)
-    username = module.tooling_cluster.master_username
-    password = module.tooling_cluster.master_password
+  alias                  = "kubernetes"
+  host                   = module.kubernetes_cluster.host
+  cluster_ca_certificate = base64decode(module.kubernetes_cluster.cluster_certificate)
+  client_certificate     = base64decode(module.kubernetes_cluster.client_certificate)
+  client_key             = base64decode(module.kubernetes_cluster.client_key)
 }
 
-module "jenkins" {
-    source = "./tooling/jenkins"
-    registry_url = data.google_container_registry_repository.registry.repository_url
+provider "helm" {
+  alias = "helm"
+  kubernetes {
+    host                   = module.kubernetes_cluster.host
+    cluster_ca_certificate = base64decode(module.kubernetes_cluster.cluster_certificate)
+    client_certificate     = base64decode(module.kubernetes_cluster.client_certificate)
+    client_key             = base64decode(module.kubernetes_cluster.client_key)
+  }
 }
 
-module "consul" {
-    source = "./tooling/consul"
-    cluster_host = module.tooling_cluster.gke_host
-    cluster_ca_certificate = base64decode(module.tooling_cluster.gke_cluster_cert)
-    cluster_username = module.tooling_cluster.master_username
-    cluster_password = module.tooling_cluster.master_password
+module "tools" {
+  source = "./tools"
+
+  providers = {
+    kubernetes = kubernetes.kubernetes
+    helm       = helm.helm
+  }
+  namespace                 = "tooling"
+  tooling_default_subdomain = var.tooling_subdomain
 }
