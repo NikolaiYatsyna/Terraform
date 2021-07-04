@@ -32,3 +32,6 @@ tfplan
 .idea
 .ipr
 .iws
+local.tfvars
+keys.json
+.terraform.lock.hcl

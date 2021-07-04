@@ -1,4 +1,22 @@
+ui:
+  enabled: true
+  serviceType: 'ClusterIP'
+
+global:
+  enabled: true
 server:
+  dev:
+    enabled: false
+  extraEnvironmentVars:
+    VAULT_DEV_LISTEN_ADDRESS: 0.0.0.0:8200
+    VAULT_ADDR: http://0.0.0.0:8200
+  ingress:
+    enabled: true
+    annotations: |
+       'kubernetes.io/ingress.class': "nginx"
+       'kubernetes.io/tls-acme': "true"
+    hosts:
+     - host: ${host}
 
   affinity: |
     podAntiAffinity:
@@ -15,7 +33,7 @@ server:
 
   ha:
     enabled: true
-    replicas: 1
+    replicas: ${server_replicas}
     config: |
       ui = true
 
@@ -31,14 +49,3 @@ server:
       }
 
       service_registration "kubernetes" {}
-
-      seal "gcpckms" {
-         project     = "${project}"
-         region      = "${keyring_location}"
-         key_ring    = "${key_ring}"
-         crypto_key  = "${crypto_key}"
-      }
-ui:
-  enabled: true
-  serviceType: 'LoadBalancer'
-  externalPort: 80
